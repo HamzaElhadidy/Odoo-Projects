@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_real,access_real,model_real_state,,1,1,1,1
+access_change_status,access_change_status,model_change_status,,1,1,1,1
+access_property_history,access_property_history,model_property_history,,1,1,1,1
+access_property_contract,access_property_contract,model_property_contract,,1,1,1,1
+access_real_state_agent,real.state.agent,model_real_state,property_agent_group,1,1,1,0
+access_real_state_manager,real.state.manager,model_real_state,property_manager_group,1,1,1,1
+access_property_contract_agent,property.contract.agent,model_property_contract,property_agent_group,1,1,1,0
+access_property_contract_manager,property.contract.manager,model_property_contract,property_manager_group,1,1,1,1

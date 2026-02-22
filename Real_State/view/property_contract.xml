@@ -1,0 +1,70 @@
+<odoo>
+    <record id="property_contract_tree_view" model="ir.ui.view" >
+        <field name="name">property.contract.view</field>
+        <field name="model">property.contract</field>
+        <field name="arch" type="xml">
+            <list >
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="contract_type"/>
+                <field name="state"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="property_contract_form_view" model="ir.ui.view">
+        <field name="name">property.contract.form</field>
+        <field name="model">property.contract</field>
+        <field name="arch" type="xml">
+            <form string="Property Contract">
+                <header>
+                    <button name="action_activate"
+                            string="Activate"
+                            type="object"
+                            class="btn-primary"
+                            state="draft"/>
+
+                    <button name="action_close"
+                            string="Close"
+                            type="object"
+                            state="active"/>
+
+                    <field name="state" widget="statusbar"/>
+                </header>
+
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="property_id"/>
+                            <field name="contract_type"/>
+                        </group>
+
+                        <group>
+                            <field name="agent"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_property_contract" model="ir.actions.act_window">
+        <field name="name">Property Contracts</field>
+        <field name="res_model">property.contract</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        id="property_contract"
+        parent="real_state_root_menu"
+        name="Contracts"
+        action="action_property_contract"
+        sequence="20"
+    />
+</odoo>

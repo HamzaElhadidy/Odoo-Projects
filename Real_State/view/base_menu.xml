@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <menuitem
+        id="real_state_root_menu"
+        name="Property Management"
+        sequence="10"
+    />
+
+    <menuitem
+        id="real_root_menu"
+        name="Clients"
+        parent="real_state_root_menu"
+        sequence="10"
+    />
+
+</odoo>
