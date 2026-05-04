@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_chef_commission" model="ir.ui.view">
+        <field name="name">res.config.settings.form.chef.commission</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+
+                <!--
+                    Chef Commission settings block.
+                    Visible to ALL companies now — no company_id restriction.
+                    Each company manages its own commission settings independently.
+                -->
+                <div class="app_settings_block"
+                     data-string="Chef Commission"
+                     string="Chef Commission">
+
+                    <h2>Chef Commission</h2>
+                    <div class="row mt16 o_settings_container">
+
+                        <!-- Commission Calculation -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Commission Calculation</span>
+                                <div class="text-muted">
+                                    Define how commissions are calculated.
+                                </div>
+                                <div class="mt8">
+                                    <field name="commission_calculation" widget="radio"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Commission Based On -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Commission Based On</span>
+                                <div class="text-muted">
+                                    Choose what value the commission applies to.
+                                </div>
+                                <div class="mt8">
+                                    <field name="commission_based_on" widget="radio"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Apply Commission -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Apply Commission With</span>
+                                <div class="text-muted">
+                                    When should the commission be triggered.
+                                </div>
+                                <div class="mt8">
+                                    <field name="apply_commission_with" widget="radio"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Commission Account</span>
+                                <div class="text-muted">
+                                    Default account for chef commission entries.
+                                </div>
+                                <div class="mt8">
+                                    <field name="commission_account_id" placeholder="Select an account..."/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

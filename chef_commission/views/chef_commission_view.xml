@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ========================= -->
+    <!-- TREE VIEW -->
+    <!-- ========================= -->
+    <record id="view_chef_commission_tree" model="ir.ui.view">
+        <field name="name">chef.commission.tree</field>
+        <field name="model">chef.commission</field>
+        <field name="arch" type="xml">
+            <tree string="Chef Commission"
+                  decoration-success="state == 'paid'"
+                  decoration-info="state == 'confirmed'"
+                  decoration-warning="state == 'bill_created'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="agent_id"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="period_invoices_total" optional="show" string="Period Invoices Total"/>
+                <field name="total_commission" optional="show" string="Commission Amount"/>
+                <field name="commission_payment_type" optional="show"/>
+                <field name="period_start_date" optional="show" string="Period Start"/>
+                <field name="today_date" optional="show" string="Commission Date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-info="state == 'confirmed'"
+                       decoration-warning="state == 'bill_created'"
+                       decoration-danger="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- SEARCH VIEW -->
+    <!-- ========================= -->
+    <record id="view_chef_commission_search" model="ir.ui.view">
+        <field name="name">chef.commission.search</field>
+        <field name="model">chef.commission</field>
+        <field name="arch" type="xml">
+            <search string="Search Commissions">
+                <field name="agent_id" string="Chef"/>
+                <field name="email"/>
+                <field name="mobile"/>
+
+                <filter string="Draft"        name="draft"        domain="[('state','=','draft')]"/>
+                <filter string="Confirmed"    name="confirmed"    domain="[('state','=','confirmed')]"/>
+                <filter string="Bill Created" name="bill_created" domain="[('state','=','bill_created')]"/>
+                <filter string="Paid"         name="paid"         domain="[('state','=','paid')]"/>
+                <filter string="Cancelled"    name="cancelled"    domain="[('state','=','cancelled')]"/>
+
+                <separator/>
+
+                <filter string="Payment Due Today" name="due_today"
+                        domain="[('next_payment_date','=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Payment Overdue" name="overdue"
+                        domain="[('next_payment_date','&lt;', context_today().strftime('%Y-%m-%d')),('state','=','confirmed')]"/>
+
+                <separator/>
+
+                <filter string="Manual"    name="manual"    domain="[('commission_payment_type','=','manually')]"/>
+                <filter string="Monthly"   name="monthly"   domain="[('commission_payment_type','=','monthly')]"/>
+                <filter string="Quarterly" name="quarterly" domain="[('commission_payment_type','=','quarterly')]"/>
+                <filter string="Biyearly"  name="biyearly"  domain="[('commission_payment_type','=','biyearly')]"/>
+                <filter string="Yearly"    name="yearly"    domain="[('commission_payment_type','=','yearly')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Chef"         name="group_agent"        context="{'group_by': 'agent_id'}"/>
+                    <filter string="Company"      name="group_company"      context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    <filter string="Payment Type" name="group_payment_type" context="{'group_by': 'commission_payment_type'}"/>
+                    <filter string="State"        name="group_state"        context="{'group_by': 'state'}"/>
+                    <filter string="Next Payment" name="group_next_payment" context="{'group_by': 'next_payment_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- FORM VIEW -->
+    <!-- ========================= -->
+    <record id="view_chef_commission_form" model="ir.ui.view">
+        <field name="name">chef.commission.form</field>
+        <field name="model">chef.commission</field>
+        <field name="arch" type="xml">
+            <form string="Chef Commission">
+
+                <header>
+                    <button name="action_confirm"
+                            string="Confirm"
+                            type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state','!=','draft')]}"/>
+
+                    <button name="action_create_bill"
+                            string="Create Bill"
+                            type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state','!=','confirmed')]}"/>
+
+                    <button name="action_new_commission_cycle"
+                            string="New Commission Cycle"
+                            type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state','not in',['paid','bill_created'])]}"/>
+
+                    <button name="action_cancel"
+                            string="Cancel"
+                            type="object"
+                            attrs="{'invisible': [('state','not in',['draft','confirmed','bill_created'])]}"/>
+
+                    <button name="action_reset_to_draft"
+                            string="Reset to Draft"
+                            type="object"
+                            attrs="{'invisible': [('state','not in',['cancelled','bill_created'])]}"/>
+
+                    <button name="%(waly_chef_commission.action_report_chef_commission)d"
+                            string="Print Report"
+                            type="action"
+                            class="btn-secondary"
+                            attrs="{'invisible': [('id','=',False)]}"/>
+
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,confirmed,bill_created,paid"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bills"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o"
+                                attrs="{'invisible': [('invoice_count','=',0)]}">
+                            <field name="invoice_count" widget="statinfo" string="Bills"/>
+                        </button>
+                    </div>
+
+                    <!-- Hidden fields used by attrs -->
+                    <field name="has_pending_commission" invisible="1"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="agent_id" placeholder="Chef Name..."
+                                   domain="[('is_chef', '=', True), '|', ('company_id', 'in', allowed_company_ids), ('company_id', '=', False)]"
+                                   options="{'no_create': True}"/>
+                        </h1>
+                    </div>
+
+                    <notebook>
+                        <page string="Chef Commission" name="agent_commission">
+                            <group>
+                                <group string="Currency &amp; Period">
+                                    <field name="currency_id" string="Currency"/>
+                                    <field name="period_start_date" string="Period Start Date"/>
+                                    <field name="period_invoices_total"
+                                           string="Period Invoices Total"
+                                           readonly="1"
+                                           widget="monetary"/>
+                                    <field name="total_commission"
+                                           string="Commission Amount"
+                                           readonly="1"
+                                           widget="monetary"/>
+                                </group>
+                                <group string="Scheduler">
+                                    <field name="commission_payment_type" string="Commission Payment Type"/>
+                                    <field name="next_payment_date" string="Next Payment Date"/>
+                                </group>
+                            </group>
+
+                            <!-- Commission Range Lines (percentage based) -->
+                            <separator string="Commission Ranges"/>
+                            <p class="text-muted" style="margin-bottom:8px;">
+                            </p>
+                            <field name="commission_line_ids" nolabel="1">
+                                <tree string="Commission Ranges" editable="bottom">
+                                    <field name="from_amount" string="From Amount"/>
+                                    <field name="to_amount"   string="To Amount"/>
+                                    <field name="percentage"  string="Commission %"
+                                           help="Percentage of the period invoices total. E.g. enter 2 for 2%."/>
+                                </tree>
+                            </field>
+                        </page>
+
+                    </notebook>
+                </sheet>
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- ACTION -->
+    <!-- ========================= -->
+    <record id="action_chef_commission" model="ir.actions.act_window">
+        <field name="name">Commissions</field>
+        <field name="res_model">chef.commission</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_chef_commission_search"/>
+    </record>
+
+    <!-- ========================= -->
+    <!-- MENUS -->
+    <!-- ========================= -->
+    <menuitem id="menu_chef_commission_root"
+              name="Chef Commission"
+              parent="sale.sale_menu_root"
+              groups="waly_chef_commission.group_chef_commission_user,base.group_system"
+              sequence="15"/>
+
+    <menuitem id="menu_chef_commission_commissions"
+              name="Commissions"
+              parent="menu_chef_commission_root"
+              action="action_chef_commission"
+              sequence="1"/>
+
+</odoo>

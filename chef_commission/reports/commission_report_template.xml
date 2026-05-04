@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_chef_commission_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <t t-call="waly_chef_commission.report_chef_commission_styles"/>
+
+                        <!-- HEADER -->
+                        <div class="report-header">
+                            <div class="header-left">
+                                <div class="report-title">Chef Commission Report</div>
+                                <div class="report-subtitle">Official Commission Statement</div>
+                            </div>
+                            <div class="header-right">
+                                <div class="company-name">
+                                    <t t-esc="doc.company_id.name or '—'"/>
+                                </div>
+                                <div class="print-date">
+                                    <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y')"/>
+                                </div>
+                                <div>
+                                    <span class="confidential-badge">Confidential</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DETAILS TABLE -->
+                        <table class="details-table">
+                            <thead>
+                                <tr>
+                                    <th colspan="4">Chef &amp; Commission Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="dl">Full Name</td>
+                                    <td class="dv"><t t-esc="doc.agent_id.name or '—'"/></td>
+                                    <td class="dl">Status</td>
+                                    <td class="dv">
+                                        <t t-esc="dict(doc.fields_get(['state'])['state']['selection']).get(doc.state, doc.state)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dl">Phone</td>
+                                    <td class="dv"><t t-esc="doc.phone or '—'"/></td>
+                                    <td class="dl">Mobile</td>
+                                    <td class="dv"><t t-esc="doc.mobile or '—'"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="dl">Email</td>
+                                    <td class="dv"><t t-esc="doc.email or '—'"/></td>
+                                    <td class="dl">VAT / Tax ID</td>
+                                    <td class="dv"><t t-esc="doc.vat or '—'"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="dl">Location</td>
+                                    <td class="dv">
+                                        <t t-esc="', '.join(filter(None, [doc.city, doc.country_id.name])) or '—'"/>
+                                    </td>
+                                    <td class="dl">Currency</td>
+                                    <td class="dv"><t t-esc="doc.currency_id.name or '—'"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="dl">Payment Type</td>
+                                    <td class="dv">
+                                        <t t-esc="dict(doc.fields_get(['commission_payment_type'])['commission_payment_type']['selection']).get(doc.commission_payment_type, doc.commission_payment_type)"/>
+                                    </td>
+                                    <td class="dl">Next Payment</td>
+                                    <td class="dv">
+                                        <t t-if="doc.next_payment_date">
+                                            <span t-field="doc.next_payment_date" t-options='{"widget": "date"}'/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dl">Period Start</td>
+                                    <td class="dv">
+                                        <t t-if="doc.period_start_date">
+                                            <span t-field="doc.period_start_date" t-options='{"widget": "date"}'/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                    <td class="dl">Commission Date</td>
+                                    <td class="dv">
+                                        <span t-field="doc.today_date" t-options='{"widget": "date"}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dl">Period Invoices Total</td>
+                                    <td class="dv">
+                                        <t t-esc="'{:,.2f}'.format(doc.period_invoices_total)"/>
+                                        <t t-if="doc.currency_id.symbol">
+                                            <t t-esc="' ' + doc.currency_id.symbol"/>
+                                        </t>
+                                    </td>
+                                    <td class="dl">Commission Amount</td>
+                                    <td class="dv">
+                                        <t t-esc="'{:,.2f}'.format(doc.total_commission)"/>
+                                        <t t-if="doc.currency_id.symbol">
+                                            <t t-esc="' ' + doc.currency_id.symbol"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dl">Total Bills</td>
+                                    <td class="dv"><t t-esc="len(doc.invoice_ids)"/> bill(s)</td>
+                                    <td class="dl"></td>
+                                    <td class="dv"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- COMMISSION RANGES (percentage based) -->
+                        <div class="section-title" style="page-break-before: avoid;">Commission Ranges</div>
+                        <table class="data-table" style="page-break-inside: avoid;">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width:6%;">#</th>
+                                    <th>From Amount</th>
+                                    <th>To Amount</th>
+                                    <th class="text-right">Commission %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="doc.commission_line_ids">
+                                    <t t-foreach="doc.commission_line_ids" t-as="line">
+                                        <tr>
+                                            <td class="text-center"><t t-esc="line_index + 1"/></td>
+                                            <td>
+                                                <span t-field="line.from_amount"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.to_amount"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                            <td class="text-right">
+                                                <t t-esc="'{:.2f}%'.format(line.percentage)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <tr><td colspan="4" class="muted">No commission ranges defined.</td></tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- SUMMARY BOX -->
+                        <t t-if="doc.invoice_ids">
+                            <div class="summary-box">
+                                <div>
+                                    <div class="summary-label">Total Billed Commission</div>
+                                    <div class="summary-sub">
+                                        Across <t t-esc="len(doc.invoice_ids)"/> vendor bill(s)
+                                    </div>
+                                </div>
+                                <div>
+                                    <t t-set="total_billed" t-value="sum(doc.invoice_ids.mapped('amount_total'))"/>
+                                    <span class="summary-value">
+                                        <t t-esc="'{:,.2f}'.format(total_billed)"/>
+                                    </span>
+                                    <span class="summary-currency">
+                                        <t t-esc="doc.currency_id.symbol or doc.currency_id.name"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- LINKED VENDOR BILLS -->
+                        <t t-if="doc.invoice_ids">
+                            <div class="section-title">Linked Vendor Bills</div>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="width:5%;">#</th>
+                                        <th>Bill Reference</th>
+                                        <th class="text-center">Bill Date</th>
+                                        <th class="text-center">Payment Status</th>
+                                        <th class="text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.invoice_ids" t-as="inv">
+                                        <tr>
+                                            <td class="text-center"><t t-esc="inv_index + 1"/></td>
+                                            <td><span t-field="inv.name"/></td>
+                                            <td class="text-center">
+                                                <span t-field="inv.invoice_date" t-options='{"widget": "date"}'/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-if="inv.payment_state == 'paid'">
+                                                    <span class="pay-paid">● Paid</span>
+                                                </t>
+                                                <t t-elif="inv.payment_state == 'partial'">
+                                                    <span class="pay-partial">◐ Partial</span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="pay-not_paid">○ Not Paid</span>
+                                                </t>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="inv.amount_total"
+                                                      t-options='{"widget": "monetary", "display_currency": inv.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4">Grand Total</td>
+                                        <td class="text-right">
+                                            <t t-set="grand_total" t-value="sum(doc.invoice_ids.mapped('amount_total'))"/>
+                                            <span class="total-amount">
+                                                <t t-esc="'{:,.2f}'.format(grand_total)"/>
+                                                <t t-if="doc.currency_id.symbol">
+                                                    <t t-esc="' ' + doc.currency_id.symbol"/>
+                                                </t>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+
+                        <!-- FOOTER -->
+                        <div class="report-footer">
+                            <span class="footer-brand">
+                                <t t-esc="doc.company_id.name"/> — Chef Commission Management
+                            </span>
+                            <span>
+                                Generated on
+                                <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y at %H:%M')"/>
+                            </span>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

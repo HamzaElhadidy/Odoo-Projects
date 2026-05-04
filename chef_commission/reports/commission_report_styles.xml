@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_chef_commission_styles">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Lato:wght@300;400;700&amp;display=swap');
+
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+
+            body, .page {
+                font-family: 'Lato', 'Times New Roman', serif;
+                font-size: 11.5px;
+                color: #1a1a1a;
+                background: #ffffff;
+            }
+
+            /* ── HEADER ── */
+            .report-header {
+                border-top: 6px solid #c0392b;
+                border-bottom: 1px solid #ddd;
+                padding: 22px 0 18px 0;
+                margin-bottom: 24px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+            .header-left .report-title {
+                font-family: 'Cormorant Garamond', Georgia, serif;
+                font-size: 28px;
+                font-weight: 700;
+                color: #c0392b;
+                letter-spacing: 0.5px;
+                line-height: 1.1;
+            }
+            .header-left .report-subtitle {
+                font-size: 10px;
+                color: #888;
+                letter-spacing: 2.5px;
+                text-transform: uppercase;
+                margin-top: 5px;
+            }
+            .header-right {
+                text-align: right;
+            }
+            .header-right .company-name {
+                font-family: 'Cormorant Garamond', Georgia, serif;
+                font-size: 16px;
+                font-weight: 600;
+                color: #1a1a1a;
+            }
+            .header-right .print-date {
+                font-size: 10px;
+                color: #999;
+                margin-top: 4px;
+            }
+            .confidential-badge {
+                display: inline-block;
+                border: 1px solid #c0392b;
+                color: #c0392b;
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                margin-top: 8px;
+            }
+
+            /* ── RED DIVIDER ── */
+            .red-rule {
+                height: 2px;
+                background: #c0392b;
+                margin: 0 0 20px 0;
+            }
+
+            /* ── SECTION TITLE ── */
+            .section-title {
+                font-family: 'Cormorant Garamond', Georgia, serif;
+                font-size: 13px;
+                font-weight: 700;
+                color: #c0392b;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin: 22px 0 10px 0;
+                padding-bottom: 5px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+
+            /* ── DETAILS TABLE (paired fields, 4 columns) ── */
+            .details-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+                border: 1px solid #ddd;
+                font-size: 11px;
+            }
+            .details-table thead tr {
+                background: #c0392b;
+            }
+            .details-table thead th {
+                color: #ffffff;
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                padding: 7px 12px;
+                text-align: left;
+            }
+            .details-table tbody tr {
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .details-table tbody tr:nth-child(even) {
+                background: #fdf5f5;
+            }
+            .details-table tbody tr:last-child {
+                border-bottom: none;
+            }
+            /* label cell */
+            .details-table td.dl {
+                width: 18%;
+                padding: 7px 12px;
+                color: #777;
+                font-size: 10.5px;
+                background: #fafafa;
+                border-right: 1px solid #f0f0f0;
+                border-left: 1px solid #f0f0f0;
+            }
+            /* value cell */
+            .details-table td.dv {
+                width: 32%;
+                padding: 7px 12px;
+                color: #1a1a1a;
+                font-weight: 700;
+                font-size: 10.5px;
+                border-right: 1px solid #ebebeb;
+            }
+
+            /* ── TABLES ── */
+            .data-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 11px;
+                margin-bottom: 6px;
+                border: 1px solid #ddd;
+            }
+            .data-table thead tr {
+                background: #c0392b;
+                color: #ffffff;
+            }
+            .data-table thead th {
+                padding: 9px 12px;
+                font-size: 9.5px;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                border: none;
+                text-align: left;
+            }
+            .data-table thead th.text-right  { text-align: right; }
+            .data-table thead th.text-center { text-align: center; }
+            .data-table tbody tr { border-bottom: 1px solid #ebebeb; }
+            .data-table tbody tr:nth-child(even) { background: #fdf5f5; }
+            .data-table tbody tr:last-child { border-bottom: none; }
+            .data-table tbody td {
+                padding: 8px 12px;
+                color: #1a1a1a;
+                border: none;
+                vertical-align: middle;
+            }
+            .data-table tbody td.text-right  { text-align: right; }
+            .data-table tbody td.text-center { text-align: center; }
+            .data-table tbody td.muted {
+                color: #aaa;
+                font-style: italic;
+                text-align: center;
+            }
+            .data-table tfoot tr {
+                background: #8b1a10;
+                color: #ffffff;
+                border-top: 2px solidrgb(0, 0, 0);
+            }
+            .data-table tfoot td {
+                padding: 9px 12px;
+                font-weight: 700;
+                font-size: 11.5px;
+                border: none;
+            }
+            .data-table tfoot td.text-right { text-align: right; }
+            .total-amount { color: #ffd5d0; font-size: 13px; font-weight: 700; }
+
+            /* ── PAYMENT STATUS ── */
+            .pay-paid     { color: #2e7d32; font-weight: 700; }
+            .pay-not_paid { color: #c0392b; font-weight: 700; }
+            .pay-partial  { color: #e65100; font-weight: 700; }
+
+            /* ── SUMMARY BOX ── */
+            .summary-box {
+                border: 1px solid #ddd;
+                border-left: 5px solid #c0392b;
+                padding: 14px 20px;
+                margin: 18px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: #fffafa;
+            }
+            .summary-label {
+                font-size: 10px;
+                color: #888;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+            }
+            .summary-sub { font-size: 10.5px; color: #aaa; margin-top: 3px; }
+            .summary-value {
+                font-family: 'Cormorant Garamond', Georgia, serif;
+                font-size: 24px;
+                font-weight: 700;
+                color: #c0392b;
+            }
+            .summary-currency {
+                font-size: 13px;
+                color: #1a1a1a;
+                font-weight: 600;
+                margin-left: 5px;
+            }
+
+            /* ── SIGNATURE AREA ── */
+            .signature-area {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 44px;
+                gap: 28px;
+            }
+            .signature-block {
+                flex: 1;
+                text-align: center;
+                border-top: 1px solid #1a1a1a;
+                padding-top: 7px;
+            }
+            .signature-label {
+                font-size: 9.5px;
+                color: #777;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+            }
+
+            /* ── FOOTER ── */
+            .report-footer {
+                margin-top: 28px;
+                padding-top: 10px;
+                border-top: 1px solid #ddd;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 9.5px;
+                color: #bbb;
+            }
+            .footer-brand { font-weight: 700; color: #c0392b; letter-spacing: 0.5px; }
+        </style>
+    </template>
+</odoo>

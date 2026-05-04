@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- Sale Order Form -->
+        <record id="view_sale_order_form_chef_commission" model="ir.ui.view">
+            <field name="name">sale.order.form.chef.commission</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="chef_id"
+                        string="Chef"
+                        options="{'no_create': True}"
+                        domain="[('is_chef', '=', True), '|', ('company_id', 'in', allowed_company_ids), ('company_id', '=', False)]"/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

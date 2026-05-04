@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Action to open Chef Commission History list -->
+    <record id="action_chef_commission_history_vendor_menu" model="ir.actions.act_window">
+        <field name="name">Chef Commission History</field>
+        <field name="res_model">chef.commission.history</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <!-- Add menu item under Vendors in Accounting -->
+    <!-- <menuitem
+        id="menu_chef_commission_history_vendor"
+        name="Chef Commission History"
+        parent="account.menu_finance_payables"
+        action="action_chef_commission_history_vendor_menu"
+        sequence="99"
+        groups="waly_chef_commission.group_chef_commission_user,base.group_system"/> -->
+
+</odoo>

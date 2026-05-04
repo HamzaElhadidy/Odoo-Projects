@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_partner_form_chef_commission" model="ir.ui.view">
+        <field name="name">res.partner.form.chef.commission</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <field name="category_id" position="after">
+                <field name="is_chef" string="Is Chef"
+                       groups="base.group_system"/>
+            </field>
+
+            <notebook position="inside">
+                <page string="Chef Commission" name="agent_commission"
+                      attrs="{'invisible': [('is_chef', '=', False)]}"
+                      groups="base.group_system">
+
+                    <field name="commission_ids" nolabel="1" readonly="1">
+                        <tree string="Commissions" create="false" delete="false" edit="false">
+                            <field name="company_id" string="Company"/>
+                            <field name="currency_id" string="Currency"/>
+                            <field name="period_start_date" string="Period Start"/>
+                            <field name="period_invoices_total"
+                                   string="Invoices Total"
+                                   widget="monetary"/>
+                            <field name="total_commission"
+                                   string="Commission Amount"
+                                   widget="monetary"/>
+                            <field name="commission_payment_type"
+                                   string="Payment Type"/>
+                            <field name="state" string="Status"/>
+                        </tree>
+                    </field>
+
+                    <footer>
+                        <button name="action_open_chef_commission"
+                                string="Open / Create Commission"
+                                type="object"
+                                class="btn-primary"/>
+                    </footer>
+
+                </page>
+            </notebook>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_chef_commission_user,chef.commission.user,model_chef_commission,waly_chef_commission.group_chef_commission_user,1,1,1,1
+access_chef_commission_admin,chef.commission.admin,model_chef_commission,base.group_system,1,1,1,1
+access_chef_commission_line_user,chef.commission.line.user,model_chef_commission_line,waly_chef_commission.group_chef_commission_user,1,1,1,1
+access_chef_commission_line_admin,chef.commission.line.admin,model_chef_commission_line,base.group_system,1,1,1,1
+access_chef_commission_history_user,chef.commission.history.user,model_chef_commission_history,waly_chef_commission.group_chef_commission_user,1,1,1,1
+access_chef_commission_history_admin,chef.commission.history.admin,model_chef_commission_history,base.group_system,1,1,1,1
+access_res_partner_bank_chef,res.partner.bank.chef.read,account.model_res_partner_bank,base.group_user,1,0,0,0
+access_account_account_chef,account.account.chef.read,account.model_account_account,base.group_user,1,0,0,0
+access_account_payment_term_chef,account.payment.term.chef.read,account.model_account_payment_term,base.group_user,1,0,0,0
+access_account_fiscal_position_chef,account.fiscal.position.chef.read,account.model_account_fiscal_position,base.group_user,1,0,0,0

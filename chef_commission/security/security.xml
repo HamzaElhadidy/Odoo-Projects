@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Security Group -->
+    <record id="group_chef_commission_user" model="res.groups">
+        <field name="name">Chef Commission User</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <!--
+        Multi-Company Record Rule
+        ─────────────────────────
+        'company_ids' is Odoo's built-in magic variable that resolves to the list
+        of companies the current user has active in the top-right company switcher.
+
+        This means:
+          • A user in Company 1 only  → sees only Company 1 records
+          • A user in Company 2 only  → sees only Company 2 records
+          • An admin with both active → sees records from both companies
+
+        Setting global="True" makes the rule apply to ALL users including
+        Administrators — consistent with how Odoo's own sale.order rules work.
+    -->
+    <record id="rule_chef_commission_company" model="ir.rule">
+        <field name="name">Chef Commission: Multi-Company Isolation</field>
+        <field name="model_id" ref="model_chef_commission"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">
+            [('company_id', 'in', company_ids)]
+        </field>
+        <field name="perm_read"   eval="True"/>
+        <field name="perm_write"  eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+</odoo>

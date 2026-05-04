@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════
+         Standalone Tree view for chef.commission.history
+    ════════════════════════════════════════════════════════════ -->
+    <record id="view_chef_commission_history_tree" model="ir.ui.view">
+        <field name="name">chef.commission.history.tree</field>
+        <field name="model">chef.commission.history</field>
+        <field name="arch" type="xml">
+            <tree string="Commission History"
+                  create="false" edit="false" delete="false"
+                  decoration-success="event == 'paid'"
+                  decoration-info="event in ('bill_created', 'auto_payment')"
+                  decoration-warning="event in ('reset', 'cycle')"
+                  decoration-danger="event == 'cancelled'">
+                <field name="date"          string="Date"/>
+                <field name="commission_id" string="Commission"/>
+                <field name="event"         string="Event"
+                       widget="badge"
+                       decoration-success="event == 'paid'"
+                       decoration-info="event in ('bill_created', 'auto_payment')"
+                       decoration-warning="event in ('reset', 'cycle')"
+                       decoration-danger="event == 'cancelled'"/>
+                <field name="amount"        string="Amount" widget="monetary"/>
+                <field name="currency_id"   invisible="1"/>
+                <field name="order_count"   string="Orders"/>
+                <field name="bill_name"     string="Bill Reference"/>
+                <field name="bill_id"       string="Bill" optional="show"/>
+                <field name="user_id"       string="Processed By"/>
+                <field name="note"          string="Note"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════
+         Search view for chef.commission.history
+    ════════════════════════════════════════════════════════════ -->
+    <record id="view_chef_commission_history_search" model="ir.ui.view">
+        <field name="name">chef.commission.history.search</field>
+        <field name="model">chef.commission.history</field>
+        <field name="arch" type="xml">
+            <search string="Search History">
+                <field name="commission_id" string="Commission"/>
+                <field name="user_id"       string="Processed By"/>
+                <field name="event"         string="Event"/>
+                <filter name="paid"         string="Paid"         domain="[('event','=','paid')]"/>
+                <filter name="bill_created" string="Bill Created" domain="[('event','=','bill_created')]"/>
+                <filter name="auto_payment" string="Auto Payment" domain="[('event','=','auto_payment')]"/>
+                <filter name="cancelled"    string="Cancelled"    domain="[('event','=','cancelled')]"/>
+                <filter name="reset"        string="Reset"        domain="[('event','=','reset')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_commission" string="Commission"   context="{'group_by': 'commission_id'}"/>
+                    <filter name="group_by_event"      string="Event"        context="{'group_by': 'event'}"/>
+                    <filter name="group_by_user"       string="Processed By" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════
+         Action: stat button on the commission form
+         (filtered to current commission only)
+    ════════════════════════════════════════════════════════════ -->
+    <record id="action_chef_commission_history" model="ir.actions.act_window">
+        <field name="name">Commission History</field>
+        <field name="res_model">chef.commission.history</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_chef_commission_history_tree"/>
+        <field name="search_view_id" ref="view_chef_commission_history_search"/>
+        <field name="domain">[('commission_id', '=', active_id)]</field>
+        <field name="context">{'default_commission_id': active_id}</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════
+         Action: History menu (all commissions, no filter)
+    ════════════════════════════════════════════════════════════ -->
+    <record id="action_chef_commission_history_all" model="ir.actions.act_window">
+        <field name="name">Commission History</field>
+        <field name="res_model">chef.commission.history</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_chef_commission_history_tree"/>
+        <field name="search_view_id" ref="view_chef_commission_history_search"/>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════
+         History menu — defined HERE (after its action above)
+         parent exists because chef_commission_view.xml loads first
+    ════════════════════════════════════════════════════════════ -->
+
+    <!-- <menuitem id="menu_chef_commission_history"
+              name="History"
+              parent="waly_chef_commission.menu_chef_commission_root"
+              action="action_chef_commission_history_all"
+              sequence="2"/> -->
+
+    <!-- ═══════════════════════════════════════════════════════
+         Inherited form — injects History stat button + tab
+    ════════════════════════════════════════════════════════════ -->
+    <record id="view_chef_commission_form_history_tab" model="ir.ui.view">
+        <field name="name">chef.commission.form.history.tab</field>
+        <field name="model">chef.commission</field>
+        <field name="inherit_id" ref="waly_chef_commission.view_chef_commission_form"/>
+        <field name="arch" type="xml">
+            <data>
+
+                <!-- History stat button -->
+                <!-- <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="%(action_chef_commission_history)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-history"
+                            context="{'default_commission_id': active_id,
+                                      'search_default_commission_id': active_id}"
+                            attrs="{'invisible': [('history_count', '=', 0)]}">
+                        <field name="history_count" widget="statinfo" string="History"/>
+                    </button>
+                </xpath> -->
+
+                <!-- Invisible fields required for attrs -->
+                <xpath expr="//field[@name='has_pending_commission']" position="after">
+                    <field name="history_count"       invisible="1"/>
+                    <field name="total_paid_amount"   invisible="1"/>
+                    <field name="total_bills_created" invisible="1"/>
+                </xpath>
+
+                <!-- Commission History tab -->
+                <!-- <xpath expr="//notebook" position="inside">
+                    <page string="Commission History" name="commission_history">
+
+                        <group>
+                            <group string="Summary">
+                                <field name="total_bills_created"
+                                       string="Total Bills Created"
+                                       readonly="1"/>
+                                <field name="total_paid_amount"
+                                       string="Total Amount Paid"
+                                       readonly="1"
+                                       widget="monetary"/>
+                            </group>
+                        </group>
+
+                        <field name="history_ids" nolabel="1" readonly="1"
+                               context="{'default_commission_id': active_id}">
+                            <tree string="History"
+                                  create="false" edit="false" delete="false"
+                                  decoration-success="event == 'paid'"
+                                  decoration-info="event in ('bill_created', 'auto_payment')"
+                                  decoration-warning="event in ('reset', 'cycle')"
+                                  decoration-danger="event == 'cancelled'">
+                                <field name="date"        string="Date"/>
+                                <field name="event"       string="Event"
+                                       widget="badge"
+                                       decoration-success="event == 'paid'"
+                                       decoration-info="event in ('bill_created', 'auto_payment')"
+                                       decoration-warning="event in ('reset', 'cycle')"
+                                       decoration-danger="event == 'cancelled'"/>
+                                <field name="amount"      string="Amount" widget="monetary"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="order_count" string="Orders"/>
+                                <field name="bill_name"   string="Bill Reference"/>
+                                <field name="bill_id"     string="Bill" optional="show"/>
+                                <field name="user_id"     string="Processed By"/>
+                                <field name="note"        string="Note"/>
+                            </tree>
+                        </field>
+
+                    </page>
+                </xpath> -->
+
+            </data>
+        </field>
+    </record>
+
+</odoo>
