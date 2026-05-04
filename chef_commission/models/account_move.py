@@ -11,6 +11,10 @@ class AccountMove(models.Model):
         'res.partner',
         string="Chef",
     )
+    chef_commission_enabled = fields.Boolean(
+        related='company_id.enable_chef_commission',
+        store=False,
+    )
 
     @api.model_create_multi
     def create(self, vals_list):

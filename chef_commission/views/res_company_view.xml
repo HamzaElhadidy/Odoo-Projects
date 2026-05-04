@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
+    <!-- ── Company Form: Add Chef Commission Tab ── -->
     <record id="view_company_form_chef_commission" model="ir.ui.view">
         <field name="name">res.company.form.chef.commission</field>
         <field name="model">res.company</field>
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
 
-            <!--
-                Commission Account is now visible for ALL companies —
-                no attrs restriction. Each company sets its own account.
-            -->
-            <field name="currency_id" position="after">
-                <field name="commission_account_id"
-                       string="Commission Account"
-                       domain="[('deprecated', '=', False)]"
-                       options="{'no_create': True}"/>
-            </field>
+            <notebook position="inside">
+                <page string="Chef Commission" name="chef_commission_tab">
+                    <!-- Safety loader in case attrs doesn't resolve from sibling group -->
+                    <field name="enable_chef_commission" invisible="1"/>
+                    <group>
+                        <group string="Feature Toggle">
+                            <field name="enable_chef_commission"
+                                string="Enable Chef Commission"
+                                widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                </page>
+            </notebook>
 
         </field>
     </record>

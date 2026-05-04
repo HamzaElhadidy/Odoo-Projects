@@ -2,21 +2,28 @@
 <odoo>
     <data>
 
-        <!-- Sale Order Form -->
         <record id="view_sale_order_form_chef_commission" model="ir.ui.view">
             <field name="name">sale.order.form.chef.commission</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
 
+                <!-- Must declare the field in the view before using it in attrs -->
+                <field name="name" position="after">
+                    <field name="chef_commission_enabled" invisible="1"/>
+                </field>
+
                 <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="chef_commission_enabled" invisible="1"/>
                     <field name="chef_id"
-                        string="Chef"
-                        options="{'no_create': True}"
-                        domain="[('is_chef', '=', True), '|', ('company_id', 'in', allowed_company_ids), ('company_id', '=', False)]"/>
+                           string="Chef"
+                           options="{'no_create': True}"
+                           domain="[('is_chef', '=', True), '|', ('company_id', 'in', allowed_company_ids), ('company_id', '=', False)]"
+                           attrs="{'invisible': [('chef_commission_enabled', '=', False)]}"/>
                 </xpath>
 
             </field>
         </record>
+
     </data>
 </odoo>

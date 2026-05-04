@@ -204,16 +204,18 @@
     <!-- ========================= -->
     <!-- MENUS -->
     <!-- ========================= -->
+    <!-- Change groups on the root menu only -->
     <menuitem id="menu_chef_commission_root"
-              name="Chef Commission"
-              parent="sale.sale_menu_root"
-              groups="waly_chef_commission.group_chef_commission_user,base.group_system"
-              sequence="15"/>
+            name="Chef Commission"
+            parent="sale.sale_menu_root"
+            groups="waly_chef_commission.group_chef_commission_active"
+            sequence="15"/>
 
+    <!-- Child menu — no change needed -->
     <menuitem id="menu_chef_commission_commissions"
-              name="Commissions"
-              parent="menu_chef_commission_root"
-              action="action_chef_commission"
-              sequence="1"/>
+            name="Commissions"
+            parent="menu_chef_commission_root"
+            action="action_chef_commission"
+            sequence="1"/>
 
 </odoo>

@@ -17,6 +17,17 @@ class ResPartner(models.Model):
         groups="base.group_system",
     )
 
+    # ── Computed: is chef commission enabled for the current company ──
+    chef_commission_enabled = fields.Boolean(
+        string="Chef Commission Enabled",
+        compute='_compute_chef_commission_enabled',
+    )
+
+    def _compute_chef_commission_enabled(self):
+        enabled = self.env.company.enable_chef_commission
+        for rec in self:
+            rec.chef_commission_enabled = enabled
+
     def write(self, vals):
         res = super().write(vals)
         if vals.get('is_chef'):
@@ -34,19 +45,15 @@ class ResPartner(models.Model):
 
     def action_open_chef_commission(self):
         self.ensure_one()
-        # Find existing commission for this company
         commission = self.env['chef.commission'].search([
             ('agent_id', '=', self.id),
             ('company_id', '=', self.env.company.id),
         ], limit=1)
-
-        # Create one if it doesn't exist
         if not commission:
             commission = self.env['chef.commission'].create({
                 'agent_id': self.id,
                 'company_id': self.env.company.id,
             })
-
         return {
             'type': 'ir.actions.act_window',
             'name': 'Chef Commission',

@@ -6,39 +6,55 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
 
-            <field name="category_id" position="after">
-                <field name="is_chef" string="Is Chef"
-                       groups="base.group_system"/>
+            <!-- Hidden helper to drive attrs -->
+            <field name="name" position="after">
+                <field name="chef_commission_enabled" invisible="1"/>
             </field>
 
+            <!-- Is Chef checkbox -->
+            <field name="category_id" position="after">
+                <field name="is_chef"
+                       string="Is Chef"
+                       groups="base.group_system"
+                       attrs="{'invisible': [('chef_commission_enabled', '=', False)]}"/>
+            </field>
+
+            <!-- Chef Commission tab -->
             <notebook position="inside">
-                <page string="Chef Commission" name="agent_commission"
-                      attrs="{'invisible': [('is_chef', '=', False)]}"
-                      groups="base.group_system">
+                <page string="Chef Commission"
+                      name="agent_commission"
+                      groups="base.group_system"
+                      attrs="{'invisible': ['|',
+                          ('is_chef', '=', False),
+                          ('chef_commission_enabled', '=', False)]}">
 
                     <field name="commission_ids" nolabel="1" readonly="1">
-                        <tree string="Commissions" create="false" delete="false" edit="false">
-                            <field name="company_id" string="Company"/>
-                            <field name="currency_id" string="Currency"/>
-                            <field name="period_start_date" string="Period Start"/>
-                            <field name="period_invoices_total"
-                                   string="Invoices Total"
+                        <tree string="Commissions"
+                              create="false" delete="false" edit="false">
+                            <field name="company_id"            string="Company"/>
+                            <field name="currency_id"           string="Currency" invisible="1"/>
+                            <field name="period_start_date"     string="Period Start"/>
+                            <field name="period_invoices_total" string="Invoices Total"
                                    widget="monetary"/>
-                            <field name="total_commission"
-                                   string="Commission Amount"
+                            <field name="total_commission"      string="Commission Amount"
                                    widget="monetary"/>
-                            <field name="commission_payment_type"
-                                   string="Payment Type"/>
-                            <field name="state" string="Status"/>
+                            <field name="commission_payment_type" string="Payment Type"/>
+                            <field name="state"                 string="Status"
+                                   widget="badge"
+                                   decoration-success="state == 'paid'"
+                                   decoration-info="state == 'confirmed'"
+                                   decoration-warning="state == 'bill_created'"
+                                   decoration-danger="state == 'cancelled'"/>
                         </tree>
                     </field>
 
-                    <footer>
+                    <!-- ✅ Correct way to place a button inside a page -->
+                    <div class="o_field_widget" style="margin-top: 8px;">
                         <button name="action_open_chef_commission"
                                 string="Open / Create Commission"
                                 type="object"
-                                class="btn-primary"/>
-                    </footer>
+                                class="btn btn-primary"/>
+                    </div>
 
                 </page>
             </notebook>

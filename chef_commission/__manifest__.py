@@ -7,6 +7,7 @@ Chef Commission
     """,
 
     'author': "Hamza Elhadidy",
+    'post_init_hook': 'post_init_hook',
 
     'category': 'Commission',
 
@@ -14,7 +15,6 @@ Chef Commission
 
     'data': [
         'security/security.xml',
-        'security/security_groups.xml',
         'security/ir.model.access.csv',
         'data/cron.xml',
         'reports/commission_report_styles.xml',

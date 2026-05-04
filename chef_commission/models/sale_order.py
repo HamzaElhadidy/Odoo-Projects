@@ -10,6 +10,11 @@ class SaleOrder(models.Model):
         tracking=True,
     )
 
+    chef_commission_enabled = fields.Boolean(
+        related='company_id.enable_chef_commission',
+        store=False,
+    )
+
     def _create_invoices(self, grouped=False, final=False, date=None):
         invoices = super()._create_invoices(grouped=grouped, final=final, date=date)
 

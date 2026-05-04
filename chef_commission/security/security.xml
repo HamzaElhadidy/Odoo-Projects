@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- Security Group -->
+    <!-- ── Group: access to commission menus and forms ── -->
     <record id="group_chef_commission_user" model="res.groups">
         <field name="name">Chef Commission User</field>
         <field name="category_id" ref="base.module_category_hidden"/>
     </record>
 
-    <!--
-        Multi-Company Record Rule
-        ─────────────────────────
-        'company_ids' is Odoo's built-in magic variable that resolves to the list
-        of companies the current user has active in the top-right company switcher.
+    <!-- ── Group: controlled by enable_chef_commission toggle on res.company ──
+         Users are added/removed programmatically in res_company.py write().
+         The Chef Commission top menu requires this group, so disabling the
+         toggle on a company immediately hides the menu for that company's users.
+    -->
+    <record id="group_chef_commission_active" model="res.groups">
+        <field name="name">Chef Commission Active</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
 
-        This means:
-          • A user in Company 1 only  → sees only Company 1 records
-          • A user in Company 2 only  → sees only Company 2 records
-          • An admin with both active → sees records from both companies
-
-        Setting global="True" makes the rule apply to ALL users including
-        Administrators — consistent with how Odoo's own sale.order rules work.
+    <!-- ── Multi-Company Record Rule ──
+         'company_ids' resolves to the companies active in the user's switcher.
+         global=True means it applies to ALL users including Administrators.
     -->
     <record id="rule_chef_commission_company" model="ir.rule">
         <field name="name">Chef Commission: Multi-Company Isolation</field>
         <field name="model_id" ref="model_chef_commission"/>
         <field name="global" eval="True"/>
-        <field name="domain_force">
-            [('company_id', 'in', company_ids)]
-        </field>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         <field name="perm_read"   eval="True"/>
         <field name="perm_write"  eval="True"/>
         <field name="perm_create" eval="True"/>

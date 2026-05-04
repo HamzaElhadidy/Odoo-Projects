@@ -493,9 +493,10 @@ class ChefCommission(models.Model):
     def _scheduler_auto_payment(self):
         today = fields.Date.today()
         agents = self.search([
-            ('state',                   '=',  'confirmed'),
-            ('commission_payment_type', '!=', 'manually'),
-            ('next_payment_date',       '<=', today),
+            ('state',                                '=',  'confirmed'),
+            ('commission_payment_type',              '!=', 'manually'),
+            ('next_payment_date',                    '<=', today),
+            ('company_id.enable_chef_commission',    '=',  True),   # ← skip disabled companies
         ])
         for agent in agents:
             try:
@@ -514,7 +515,7 @@ class ChefCommission(models.Model):
 
                 unique_ref = (
                     f"Auto Commission - {agent.agent_id.name} "
-                    f"- {today} [ID:{agent.id}]"
+                    f"- {fields.Datetime.now()} [ID:{agent.id}]"  # ← now() includes time
                 )
 
                 bill_vals = {
@@ -564,9 +565,6 @@ class ChefCommission(models.Model):
                 # ✅ Stay in bill_created — wait for payment before new cycle
                 agent.state = 'bill_created'
 
-                # ❌ REMOVED: agent.state = 'confirmed'      → was causing auto-reset loop
-                # ❌ REMOVED: agent.invoice_ids = [(5, 0, 0)] → was orphaning the bill
-
                 agent.message_post(
                     body=(
                         f"Auto-payment triggered on {today}.<br/>"
@@ -582,8 +580,9 @@ class ChefCommission(models.Model):
                 _logger.exception(
                     "Scheduler error for agent %s on %s", agent.agent_id.name, today
                 )
-                agent.message_post(body=f"Scheduler error on {today}: {str(e)}")      
-                
+                agent.message_post(body=f"Scheduler error on {today}: {str(e)}")
+
+
     def _get_next_payment_date(self, from_date):
         intervals = {
             'monthly':   relativedelta(months=1),

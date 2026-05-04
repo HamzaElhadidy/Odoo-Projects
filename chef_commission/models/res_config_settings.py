@@ -19,6 +19,7 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
     )
     apply_commission_with = fields.Selection([
+        ('sale_order', 'Sale Order'),
         ('invoice',    'Invoice'),
     ],
         string="Apply Commission With",

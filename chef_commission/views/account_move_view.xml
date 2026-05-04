@@ -7,8 +7,11 @@
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="chef_commission_enabled" invisible="1"/>
+
                 <field name="chef_id"
-                       readonly="1"/>
+                       readonly="1"
+                       attrs="{'invisible': [('chef_commission_enabled', '=', False)]}"/>
             </xpath>
 
         </field>
